@@ -335,11 +335,13 @@ workflow {
             // use medaka or nanopolish artic reconstruction
             if (params.nanopolish) { 
                 artic_ncov_np_wf(filtered_reads_ch, dir_input_ch, basecalling_wf.out[1])
-                fasta_input_ch = artic_ncov_np_wf.out[0]
+                fasta_input_ch = artic_ncov_np_wf.out.assembly
+                vcf_input_ch = artic_ncov_np_wf.out.mutations
                 }
             else if (!params.nanopolish) { 
                 artic_ncov_wf(filtered_reads_ch) 
-                fasta_input_ch = artic_ncov_wf.out[0] 
+                fasta_input_ch = artic_ncov_wf.out.assembly
+                vcf_input_ch = artic_ncov_wf.out.mutations
                 }
         }
         // fastq input via dir and or files
@@ -367,11 +369,13 @@ workflow {
                 external_primer_schemes = Channel.fromPath(workflow.projectDir + "/data/external_primer_schemes", checkIfExists: true, type: 'dir' )
 
                 artic_ncov_np_wf(filtered_reads_ch, dir_input_ch, sequence_summary_ch )
-                fasta_input_ch = artic_ncov_np_wf.out
+                fasta_input_ch = artic_ncov_np_wf.out.assembly
+                vcf_input_ch = artic_ncov_np_wf.out.mutations
                 }
             else if (!params.nanopolish) { 
                 artic_ncov_wf(filtered_reads_ch)
-                fasta_input_ch = artic_ncov_wf.out
+                fasta_input_ch = artic_ncov_wf.out.assembly
+                vcf_input_ch = artic_ncov_wf.out.mutations
                 }
         }
 
@@ -382,7 +386,7 @@ workflow {
         }
 
         determine_lineage_wf(fasta_input_ch)
-        determine_mutations_wf(fasta_input_ch)
+        determine_mutations_wf(fasta_input_ch, vcf_input_ch, reference_for_qc_input_ch)
         genome_quality_wf(fasta_input_ch, reference_for_qc_input_ch)
 
     // 3. Specialised outputs (rki, json)

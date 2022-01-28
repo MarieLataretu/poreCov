@@ -12,6 +12,7 @@ workflow artic_ncov_wf {
         artic_medaka(fastq.combine(external_primer_schemes))
 
         assembly = artic_medaka.out.fasta
+        mutations = artic_medaka.out.vcf
 
         // plot amplicon coverage
         covarplot(
@@ -23,6 +24,7 @@ workflow artic_ncov_wf {
 
     emit:   
         assembly
+        mutations
 }
 
 workflow artic_ncov_np_wf {
@@ -43,6 +45,7 @@ workflow artic_ncov_np_wf {
         )
 
         assembly = artic_nanopolish.out.fasta
+        mutations = artic_nanopolish.out.vcf
 
         // plot amplicon coverage
         covarplot(
@@ -51,4 +54,5 @@ workflow artic_ncov_np_wf {
         
     emit:   
         assembly
+        mutations
 }
